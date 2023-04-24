@@ -1,5 +1,6 @@
 #!/bin/bash
 
+#Input Validation 
 function check_valid(){
 
     [[ -z "$2" ]] && whiptail --title "Error" --msgbox "Empty Input" 8 40 \
@@ -15,16 +16,34 @@ function check_valid(){
     && return 1
     }
 
+#Reading Input from User
+function read_input(){
+    num=`whiptail --inputbox "$1 Number" 8 20 \
+    --title "$2" 3>&1 1>&2 2>&3`
 
-#CORE FUNCTIONS
-###############
+    echo "$num"
+    }
+
+
 #Standard Calculator
+#CALLING : Standard_Calc {+ - * / **} {ADD SUB MUL DIV EXP}
+#EX : Standard_Calc "*" "MUL"
 
-# function ADD(){}
-# function SUB(){}
-# function MUL(){}
-# function DIV(){}
-# function EXP(){}
+function Standard_Calc(){
+
+    num1=`read_input "First" "$2"` && check_valid "dec" "$num1" \
+    && num2=`read_input "Second" "$2"` && check_valid "dec" "$num2" 
+
+    [[ "$2" -eq "DIV" || "$2" -eq "SUB" ]] && [[ "$num2" -gt "$num1" ]]\
+    &&whiptail --title "$2 Error"\
+    --msgbox "  Second Number Greater Than First" 8 40 \
+    && return 1
+
+    [[ "$?" -eq "0" ]] && res=$[$num1$1$num2]\
+    &&whiptail --title "Result" --msgbox "$res" 8 40
+
+    }
+
 
 ###############
 #Programmer Calculator
