@@ -43,12 +43,12 @@ function Standard_Calc(){
     local num1=`read_input "First" "$2"` && check_valid "Dec" "$num1" \
     && local num2=`read_input "Second" "$2"` && check_valid "Dec" "$num2" 
 
-    [[ "$2" -eq "DIV" || "$2" -eq "SUB" ]] && [[ "$num2" -gt "$num1" ]]\
+    [[ "$2" == "DIV" || "$2" == "SUB" ]] && [[ "$num2" -gt "$num1" ]]\
     &&whiptail --title "$2 Error"\
     --msgbox "  Second Number Greater Than First" 8 40 \
     && return 1
 
-    [[ "$?" -eq "0" ]] && local res=$[$num1$1$num2]\
+    local res=$[$num1$1$num2]\
     &&whiptail --title "Result" --msgbox "$res" 8 40
 
     }
