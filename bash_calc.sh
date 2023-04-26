@@ -1,24 +1,27 @@
 #!/bin/bash
 
+###############
+#Core Functions
+
 #Input Validation 
 #CALLING : check_valid {Type} {Input}
 #EX : check_valid "Oct" "4"
 #       |-->> return 0  (True)
 #EX : check_valid "Bin" "7"
-#       |-->> return 1  (False)
+#       |-->> return 11 (empty input) | return 12 (invalid input) ->(False)
 function check_valid(){
 
     [[ -z "$2" ]] && whiptail --title "Error" --msgbox "Empty Input" 8 40 \
-    && return 1
+    && return 11
 
     case "$1" in
-        "Dec") [[ "$2" =~ ^[0-9]+?$ ]] && return 0  ;;
-        "Bin") [[ "$2" =~ ^[0-1]+?$ ]] && return 0  ;;
-        "Oct") [[ "$2" =~ ^[0-7]+?$ ]] && return 0  ;;
-        "Hex") [[ "$2" =~ ^[0-9A-Fa-f]+$ ]] && return 0 ;;
+        "Dec") [[ "$2" =~ ^[\-0-9]+?$ ]] && return  ;;
+        "Bin") [[ "$2" =~ ^[0-1]+?$ ]] && return    ;;
+        "Oct") [[ "$2" =~ ^[0-7]+?$ ]] && return    ;;
+        "Hex") [[ "$2" =~ ^[0-9A-Fa-f]+$ ]] && return   ;;
     esac
     whiptail --title "Error" --msgbox "Invalid Input" 8 40 \
-    && return 1
+    && return 12
     }
 
 
@@ -28,7 +31,7 @@ function check_valid(){
 #       |-->> whiptail --inputbox "Bin Number" 8 20\
 #               --title "CONVERTER" 3>&1 1>&2 2>&3`
 function read_input(){
-    local num=`whiptail --inputbox "$1 Number" 8 25 \
+    local num=`whiptail --inputbox "$1" 8 25 \
     --title "$2" 3>&1 1>&2 2>&3`
 
     echo "$num"
@@ -40,16 +43,13 @@ function read_input(){
 #EX : Standard_Calc "*" "MUL"
 function Standard_Calc(){
 
-    local num1=`read_input "First" "$2"` && check_valid "Dec" "$num1" \
-    && local num2=`read_input "Second" "$2"` && check_valid "Dec" "$num2" 
+    local num1=`read_input "First Number" "$2"` && check_valid "Dec" "$num1" \
+    && local num2=`read_input "Second Number" "$2"` && check_valid "Dec" "$num2" 
 
-    [[ "$2" == "DIV" || "$2" == "SUB" ]] && [[ "$num2" -gt "$num1" ]]\
-    &&whiptail --title "$2 Error"\
-    --msgbox "  Second Number Greater Than First" 8 40 \
-    && return 1
+    [[ "$?" -ne "0" ]] && return 21
 
     local res=$[$num1$1$num2]\
-    &&whiptail --title "Result" --msgbox "$res" 8 40
+    &&whiptail --title "Result" --msgbox " $res" 8 40
 
     }
 
@@ -60,10 +60,10 @@ function Standard_Calc(){
 #       |-->> Convert from DEC to BIN,OCT,HEX
 function Programmer_Calc(){
 
-    local num=`read_input "$1" "CONVERTER"`
+    local num=`read_input "$1 Number" "CONVERTER"`
 
     check_valid "$1" "$num"
-    [[ "$?" -ne "0" ]] && return 1
+    [[ "$?" -ne "0" ]] && return 31
 
     local decimal_num=""
     local binary_num=""
@@ -111,21 +111,52 @@ function Programmer_Calc(){
         OCT:$octal_num" 8 60
     }
 
-#Scientific Calculator
 
-# function RShift(){}
-# function LShift(){}
-# function AND(){}
-# function OR(){}
-# function XOR(){}
-# function NOT(){}
+#Scientific Calculator
+#CALLING : Scientific_Calc {Operator} {Operation Description}
+#EX : Scientific_Calc "<<" "LShift" 
+function Scientific_Calc(){
+
+    case "$2" in
+
+        "LShift" | "RShift" )
+
+        local num1=`read_input "Number" "$2"` && check_valid "Dec" "$num1" \
+        && local num2=`read_input "Shift" "$2"` && check_valid "Dec" "$num2" 
+
+        [[ "$num2" -lt "0" ]] \
+        &&whiptail --title "Error" --msgbox "Result not defined" 8 40 \
+        &&return 41
+
+        local res=$[ $num1$1$num2 ] \
+        &&whiptail --title "Result" --msgbox " $res" 8 40
+        ;;
+
+        "NOT" )
+
+        local num1=`read_input "Number" "$2"` && check_valid "Dec" "$num1"
+
+        local res=$[~$num1] \
+        &&whiptail --title "Result" --msgbox " $res" 8 40 
+        ;;
+
+        "AND" | "OR" | "XOR" )
+
+        local num1=`read_input "First Number" "$2"` && check_valid "Dec" "$num1" \
+        && local num2=`read_input "Second Number" "$2"` && check_valid "Dec" "$num2" 
+
+        local res=$[ $num1$1$num2 ] \
+        &&whiptail --title "Result" --msgbox " $res" 8 40
+    
+    esac
+    }
 
 
 ###############
 #Calculation Functions' Menus
 function standard_calc_menu(){
 
-    local calc=`whiptail --title "Standard Calculator"\
+    local CALC=`whiptail --title "Standard Calculator"\
     --menu "Choose an option" 25 50 15 \
     "1" "ADD"\
     "2" "SUB"\
@@ -134,7 +165,7 @@ function standard_calc_menu(){
     "5" "EXP"\
     3>&1 1>&2 2>&3` 
 
-    case "$calc" in 
+    case "$CALC" in 
 
         "1") Standard_Calc "+" "ADD"    ;;
         "2") Standard_Calc "-" "SUB"    ;;
@@ -147,7 +178,7 @@ function standard_calc_menu(){
 
 function programmer_calc_menu(){
 
-    local calc=`whiptail --title "Programmer Calculator"\
+    local CALC=`whiptail --title "Programmer Calculator"\
     --menu "Choose an option" 25 50 15 \
     "1" "BIN"\
     "2" "DEC"\
@@ -155,7 +186,7 @@ function programmer_calc_menu(){
     "4" "OCT"\
     3>&1 1>&2 2>&3` 
 
-    case "$calc" in 
+    case "$CALC" in 
 
         "1") Programmer_Calc "Bin"    ;;
         "2") Programmer_Calc "Dec"    ;;
@@ -166,22 +197,37 @@ function programmer_calc_menu(){
     }
 
 function scientific_calc_menu(){
-    local calc=`whiptail --title "Scientific Calculator"\
-    --menu "Test" 25 50 15 \
-    "1" " test" \
-    "2" " test" \
-    "3" " test" 3>&1 1>&2 2>&3`
+
+    local CALC=`whiptail --title "Scientific Calculator"\
+    --menu "Choose an option" 25 50 15 \
+    "1" "LShift" \
+    "2" "RShift" \
+    "3" "AND" \
+    "4" "OR" \
+    "5" "XOR" \
+    "6" "NOT" 3>&1 1>&2 2>&3`
+
+    case "$CALC" in 
+
+        "1") Scientific_Calc "<<" "LShift"  ;;
+        "2") Scientific_Calc ">>" "RShift"  ;;
+        "3") Scientific_Calc "&" "AND"  ;;
+        "4") Scientific_Calc "|" "OR"   ;;
+        "5") Scientific_Calc "^" "XOR"  ;;
+        "6") Scientific_Calc "~" "NOT"  ;;
+
+    esac
     }
 
 #Calculator Menu (just menu)
 function CALC_MENU(){
-    local calc=`whiptail --title "Calculator"\
+    local CALC=`whiptail --title "Calculator"\
     --menu "Choose an option" 25 50 15 \
     "1" "Standard"\
     "2" "Programmer"\
     "3" "Scientific" 3>&1 1>&2 2>&3` 
 
-    case "$calc" in 
+    case "$CALC" in 
 
         "1") standard_calc_menu      ;;
         "2") programmer_calc_menu    ;;
@@ -200,13 +246,13 @@ function DOC(){
 #Main Menu
 function MAIN(){
 
-        local calc=`whiptail --title "Calculator"\
+        local CALC=`whiptail --title "Calculator"\
         --menu "Choose an option" 25 50 15 \
         "1" "Calculator"\
         "2" "Documentation"\
         "3" "Exit" 3>&1 1>&2 2>&3` 
 
-        case "$calc" in 
+        case "$CALC" in 
 
             "1") CALC_MENU  ;;
             "2") programmer_calc_menu    ;;
