@@ -63,7 +63,7 @@ function Programmer_Calc(){
     local num=`read_input "$1" "CONVERTER"`
 
     check_valid "$1" "$num"
-    [[ $? -ne "0" ]] && return 1
+    [[ "$?" -ne "0" ]] && return 1
 
     local decimal_num=""
     local binary_num=""
@@ -123,15 +123,96 @@ function Programmer_Calc(){
 
 ###############
 #Calculation Functions' Menus
-# function standard_calc_menu(){}
-# function programmer_calc_menu(){}
-# function scientific_calc_menu(){}
+function standard_calc_menu(){
+
+    local calc=`whiptail --title "Standard Calculator"\
+    --menu "Choose an option" 25 50 15 \
+    "1" "ADD"\
+    "2" "SUB"\
+    "3" "MUL"\
+    "4" "DIV"\
+    "5" "EXP"\
+    3>&1 1>&2 2>&3` 
+
+    case "$calc" in 
+
+        "1") Standard_Calc "+" "ADD"    ;;
+        "2") Standard_Calc "-" "SUB"    ;;
+        "3") Standard_Calc "*" "MUL"    ;;
+        "4") Standard_Calc "/" "DIV"    ;;
+        "5") Standard_Calc "**" "EXP"   ;;
+
+    esac
+    }
+
+function programmer_calc_menu(){
+
+    local calc=`whiptail --title "Programmer Calculator"\
+    --menu "Choose an option" 25 50 15 \
+    "1" "BIN"\
+    "2" "DEC"\
+    "3" "HEX"\
+    "4" "OCT"\
+    3>&1 1>&2 2>&3` 
+
+    case "$calc" in 
+
+        "1") Programmer_Calc "Bin"    ;;
+        "2") Programmer_Calc "Dec"    ;;
+        "3") Programmer_Calc "Hex"    ;;
+        "4") Programmer_Calc "Oct"    ;;
+
+    esac
+    }
+
+function scientific_calc_menu(){
+    local calc=`whiptail --title "Scientific Calculator"\
+    --menu "Test" 25 50 15 \
+    "1" " test" \
+    "2" " test" \
+    "3" " test" 3>&1 1>&2 2>&3`
+    }
 
 #Calculator Menu (just menu)
-# function CALC_MENU(){}
+function CALC_MENU(){
+    local calc=`whiptail --title "Calculator"\
+    --menu "Choose an option" 25 50 15 \
+    "1" "Standard"\
+    "2" "Programmer"\
+    "3" "Scientific" 3>&1 1>&2 2>&3` 
 
-#Documentation and Team Members
-# function DOC(){}
+    case "$calc" in 
+
+        "1") standard_calc_menu      ;;
+        "2") programmer_calc_menu    ;;
+        "3") scientific_calc_menu    ;;
+
+    esac
+    }
+
+#Documentation
+function DOC(){
+    whiptail --title "Example Dialog"\
+    --msgbox "Test" 8 78
+
+    }
 
 #Main Menu
-# function MAIN(){}
+function MAIN(){
+
+        local calc=`whiptail --title "Calculator"\
+        --menu "Choose an option" 25 50 15 \
+        "1" "Calculator"\
+        "2" "Documentation"\
+        "3" "Exit" 3>&1 1>&2 2>&3` 
+
+        case "$calc" in 
+
+            "1") CALC_MENU  ;;
+            "2") programmer_calc_menu    ;;
+            "3") exit       ;;
+
+        esac
+    }
+
+MAIN
