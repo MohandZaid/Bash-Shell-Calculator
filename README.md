@@ -30,6 +30,8 @@ B --> G(Programmer)--> N(BIN-DEC-OCT-HEX)-->E
 B --> H(Scientific)--> R(LShift-RShift-AND-OR-XOR-NOT)-->E
 
 ```
+## Contributing
+If you're a student or an aspiring coder, you are welcomed to contribute to my practice coding project. It's a great opportunity for practicing and honing your coding skills. Your contributions are highly appreciated and can have a positive impact on the project's growth.
 
 ## Contact
 **Mohand Zaid** ` < mohandzaid33@gmail.com > `
