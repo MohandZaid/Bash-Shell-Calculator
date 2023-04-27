@@ -1,3 +1,7 @@
+##########################
+#Developed By: Mohand Zaid
+##########################
+
 #!/bin/bash
 
 ###############
@@ -238,9 +242,22 @@ function CALC_MENU(){
 
 #Documentation
 function DOC(){
-    whiptail --title "Example Dialog"\
-    --msgbox "Test" 8 78
 
+    doc="This is a simple calculator implemented in Bash script.\
+It provides various mathematical operations as well as number conversion functionalities.\n
+\nThe calculator supports the following operations:\n\
+\n    -Addition (+): Adds two numbers.\
+\n    -Subtraction (-): Subtracts one number from another.\
+\n    -Division (/): Divides one number by another.\
+\n    -Multiplication (*): Multiplies two numbers.\
+\n    -Exponentiation (^): Raises a number to a specified power.\
+\n    -Provides number conversion between different bases:\
+\n        Binary <-> Decimal <-> Octal <-> Hexadecimal
+\n
+\nDeveloped By: Mohand Zaid < mohandzaid33@gmail.com > "
+
+    whiptail --title "Documentation"\
+    --msgbox  --scrolltext "$doc" 30 65
     }
 
 #Main Menu
@@ -255,7 +272,7 @@ function MAIN(){
         case "$CALC" in 
 
             "1") CALC_MENU  ;;
-            "2") programmer_calc_menu    ;;
+            "2") DOC    ;;
             "3") exit       ;;
 
         esac
